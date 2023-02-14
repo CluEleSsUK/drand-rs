@@ -12,13 +12,14 @@ The daemon which participates in the network
 
 ## TODO
 - [x] generate a keypair
-- [ ] load the keypair on the daemon
-- [ ] distributed key generation
+- [x] load the keypair on the daemon
+- [ ] very rudimentary distributed key generation
 - [ ] sending partial beacons
 - [ ] aggregating partial beacons
 - [ ] storing beacons
 - [ ] HTTP API
 - [ ] gossipsub API
+- [ ] proper distributed key generation
 - [ ] key resharing
 - [ ] catchup of existing beacons
 - [ ] metrics

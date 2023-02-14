@@ -7,6 +7,7 @@ use std::process::exit;
 use clap::{Arg, ArgAction, ArgMatches, Command};
 use ed25519_dalek::Keypair;
 use rand::rngs::OsRng;
+use daemon::DaemonOptions;
 
 const DEFAULT_BEACON_ID: &str = "default";
 
@@ -30,6 +31,17 @@ fn cli() -> Command {
                     .default_value("~/.drand")
                 )
         )
+        .subcommand(
+            Command::new("start")
+                .about("Start a drand daemon with a network for every folder in the multibeacon directory under the folder passed by --folder")
+                .arg(Arg::new("folder")
+                    .short('f')
+                    .long("folder")
+                    .help("generate a keypair for a specific beacon on a daemon")
+                    .action(ArgAction::Set)
+                    .default_value("~/.drand")
+                )
+        )
 }
 
 fn main() {
@@ -38,6 +50,7 @@ fn main() {
 
     let result = match matches.subcommand() {
         Some(("generate-keypair", args)) => generate_keypair(args),
+        Some(("start", args)) => start_daemon(args),
         _ => Err("command not found".to_string())
     };
 
@@ -91,4 +104,12 @@ fn generate_keypair(args: &ArgMatches) -> Result<String, String> {
         .map_err(|err| format!("error writing public key: {}", err.to_string()))?;
 
     Ok("keypair generated succesfully".to_string())
+}
+
+fn start_daemon(args: &ArgMatches) -> Result<String, String> {
+    let folder = args.get_one::<String>("folder").ok_or("folder argument was empty")?;
+
+    let mut daemon = daemon::Daemon::new();
+    daemon.start(DaemonOptions { folder: folder.clone() })
+        .map(|_| "daemon started successfully".to_string())
 }
